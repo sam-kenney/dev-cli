@@ -1,7 +1,14 @@
-mod cli;
+mod dev_cli;
 use clap::{arg, ArgMatches, Command};
 use tokio;
 
+/// DevCLI entry point.
+///
+/// Create a new project for a given language.
+///
+/// # Arguments
+/// * `--lang` - Language to generate a project for
+/// * `--name` - Name to give the project
 #[tokio::main]
 async fn main() {
     let matches: ArgMatches = Command::new("dev-cli")
@@ -15,8 +22,5 @@ async fn main() {
     let lang: &String = matches.get_one::<String>("lang").expect("required");
     let name: &String = matches.get_one::<String>("name").expect("required");
 
-    match lang.as_str() {
-        "py" => cli::lang::python::execute(name.to_string()).await,
-        _ => println!("Language not supported"),
-    }
+    dev_cli::execute(lang, name).await
 }
