@@ -1,4 +1,4 @@
-use reqwest;
+use reqwest::{Error, Response};
 
 /// Make a HTTP get request.
 ///
@@ -22,8 +22,8 @@ use reqwest;
 ///     Err(e) => panic!("{}", e)
 /// }
 /// ```
-pub async fn get(url: String) -> reqwest::Response {
-    let response = reqwest::get(url).await;
+pub async fn get(url: String) -> Response {
+    let response: Result<Response, Error> = reqwest::get(url).await;
     match response {
         Ok(response) => response,
         Err(_) => panic!("Error: Could not get response from request."),
