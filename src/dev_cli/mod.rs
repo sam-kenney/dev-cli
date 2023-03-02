@@ -1,3 +1,5 @@
+/// Commands for the CLI.
+pub mod commands;
 /// Execute CLI.
 mod exec;
 pub use exec::execute;

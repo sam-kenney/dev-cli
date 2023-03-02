@@ -1,26 +1,38 @@
 mod dev_cli;
-use clap::{arg, ArgMatches, Command};
+use clap::{ArgMatches, Command};
 use tokio;
 
 /// DevCLI entry point.
 ///
-/// Create a new project for a given language.
-///
-/// # Arguments
-/// * `--lang` - Language to generate a project for
-/// * `--name` - Name to give the project
+/// # Subcommands
+/// * `project` - Operations for creating and managing projects
 #[tokio::main]
 async fn main() {
     let matches: ArgMatches = Command::new("dev-cli")
         .version("0.1.0")
         .author("Sam Kenney <sam.kenney@me.com>")
         .about("A CLI for creating development projects")
-        .arg(arg!(--lang <String> "Language to generate a project for").required(true))
-        .arg(arg!(--name <String> "Name to give the project").required(true))
+        .subcommand(dev_cli::commands::project())
         .get_matches();
 
-    let lang: &String = matches.get_one::<String>("lang").expect("required");
-    let name: &String = matches.get_one::<String>("name").expect("required");
+    let cmd: Option<&str> = matches.subcommand_name();
 
-    dev_cli::execute(lang, name).await
+    match cmd {
+        Some("project") => {
+            let matches: &ArgMatches = matches.subcommand_matches("project").unwrap();
+            let cmd: Option<&str> = matches.subcommand_name();
+
+            match cmd {
+                Some("new") => {
+                    let arguments: &ArgMatches = matches.subcommand_matches("new").unwrap();
+                    let name: &String = arguments.get_one::<String>("name").expect("required");
+                    let lang: &String = arguments.get_one::<String>("lang").expect("required");
+
+                    dev_cli::execute(lang, name).await
+                }
+                _ => println!("No command found"),
+            }
+        }
+        _ => println!("No command found"),
+    }
 }
