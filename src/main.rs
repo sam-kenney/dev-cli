@@ -13,6 +13,7 @@ async fn main() {
         .author("Sam Kenney <sam.kenney@me.com>")
         .about("A CLI for creating development projects")
         .subcommand(dev_cli::commands::project())
+        .arg_required_else_help(true)
         .get_matches();
 
     let cmd: Option<&str> = matches.subcommand_name();
@@ -26,13 +27,16 @@ async fn main() {
                 Some("new") => {
                     let arguments: &ArgMatches = matches.subcommand_matches("new").unwrap();
                     let name: &String = arguments.get_one::<String>("name").expect("required");
-                    let lang: &String = arguments.get_one::<String>("lang").expect("required");
+                    let lang: String = arguments
+                        .get_one::<String>("lang")
+                        .unwrap_or(&"py".to_string())
+                        .to_owned();
 
-                    dev_cli::execute(lang, name).await
+                    dev_cli::execute(&lang, name).await
                 }
-                _ => println!("No command found"),
+                _ => {}
             }
         }
-        _ => println!("No command found"),
+        _ => {}
     }
 }
