@@ -56,7 +56,7 @@ impl Language for Python {
         for file in self.files.iter() {
             let url: String = format!("{}{}", self.base_url, file);
             let response: reqwest::Response = request::get(url).await;
-            utils::write_file_from_response(response, file.to_string(), dir.to_string()).await;
+            utils::write_file_from_response(response, file.to_owned(), dir.to_owned()).await;
         }
     }
 }

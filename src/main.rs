@@ -25,14 +25,12 @@ async fn main() {
 
             match cmd {
                 Some("new") => {
-                    let arguments: &ArgMatches = matches.subcommand_matches("new").unwrap();
-                    let name: &String = arguments.get_one::<String>("name").expect("required");
-                    let lang: String = arguments
-                        .get_one::<String>("lang")
-                        .unwrap_or(&"py".to_string())
-                        .to_owned();
+                    let name: String = dev_cli::get_required_value(matches, "new", "name");
 
-                    dev_cli::execute(&lang, name).await
+                    let lang: String =
+                        dev_cli::get_value_or_default(matches, "new", "lang", "py".to_string());
+
+                    dev_cli::execute(&lang, &name).await
                 }
                 _ => {}
             }

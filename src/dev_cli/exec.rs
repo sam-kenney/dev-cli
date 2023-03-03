@@ -15,6 +15,7 @@ use crate::dev_cli::lang::{Language, Python};
 pub async fn execute(lang: &String, name: &String) {
     match lang.as_str() {
         "py" => Python::new().execute(&name).await,
-        _ => println!("Language not supported"),
+        _ => eprintln!("Language `{}` not yet supported", lang),
     }
+    std::process::exit(1)
 }
