@@ -1,5 +1,16 @@
 use clap::{arg, Command};
 
+/// Operations for creating and managing projects.
+///
+/// # Subcommands
+/// * `new` - Create a new project
+pub fn project() -> Command {
+    Command::new("project")
+        .about("Operations for creating and managing projects")
+        .subcommand(new())
+        .arg_required_else_help(true)
+}
+
 /// Create a new project.
 ///
 /// # Arguments
@@ -10,16 +21,5 @@ fn new() -> Command {
         .about("Create a new project")
         .arg(clap::Arg::new("name").required(true))
         .arg(arg!(-l --lang <String> "Language to generate a project for"))
-        .arg_required_else_help(true)
-}
-
-/// Operations for creating and managing projects.
-///
-/// # Subcommands
-/// * `new` - Create a new project
-pub fn project() -> Command {
-    Command::new("project")
-        .about("Operations for creating and managing projects")
-        .subcommand(new())
         .arg_required_else_help(true)
 }
