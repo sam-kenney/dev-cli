@@ -7,11 +7,12 @@ use crate::cli;
 /// * `name` - The name of the project.
 pub async fn ruby(name: String) {
     println!("Creating Ruby project `{}`", name);
-    let base_url = "https://raw.githubusercontent.com/sam-kenney/ruby-template/main/";
+    let base_url: &str = "https://raw.githubusercontent.com/sam-kenney/ruby-template/main/";
     let files: Vec<&str> = vec![
         "spec/calculate_spec.rb",
         "src/calculate.rb",
         "src/main.rb",
+        ".editorconfig",
         ".gitignore",
         ".rubocop.yml",
         ".ruby-version",
