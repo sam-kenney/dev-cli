@@ -10,7 +10,7 @@ use clap::ArgMatches;
 ///
 /// # Returns
 ///
-/// * `&T` - The value of the parameter.
+/// * `T` - The value of the parameter.
 pub fn get_required_value<T>(matches: &ArgMatches, command: &str, name: &str) -> T
 where
     T: Clone + Send + Sync + std::str::FromStr + TryInto<T> + 'static,
@@ -41,7 +41,7 @@ where
 ///
 /// # Returns
 ///
-/// * `Option<&T>` - The value of the parameter.
+/// * `Option<T>` - The value of the parameter.
 pub fn get_optional_value<T>(matches: &ArgMatches, command: &str, name: &str) -> Option<T>
 where
     T: Clone + Send + Sync + std::str::FromStr + TryInto<T> + 'static,
