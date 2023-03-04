@@ -1,3 +1,5 @@
+use std::fs;
+
 /// Download files from a URL.
 ///
 /// # Arguments
@@ -28,6 +30,7 @@ pub async fn download_files(base_url: &str, files: Vec<&str>, name: &String) {
 /// * `path` - The path to save the file to.
 async fn download_file(url: String, path: String) -> Result<(), Box<dyn std::error::Error>> {
     let resp = reqwest::get(url).await?.text().await?;
+    fs::create_dir_all(std::path::Path::new(&path).parent().unwrap()).unwrap();
     let mut out = std::fs::File::create(path)?;
     std::io::copy(&mut resp.as_bytes(), &mut out)?;
     Ok(())
