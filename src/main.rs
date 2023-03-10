@@ -1,6 +1,5 @@
 mod cli;
 use clap::{ArgMatches, Command};
-use tokio;
 
 #[tokio::main]
 async fn main() {

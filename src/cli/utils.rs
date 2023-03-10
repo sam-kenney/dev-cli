@@ -19,7 +19,7 @@ where
         .subcommand_matches(command)
         .unwrap()
         .get_one::<String>(name)
-        .expect(format!("`{}` is required", name).as_str())
+        .unwrap_or_else(|| panic!("`{name}` is required"))
         .parse()
         .unwrap_or_else(|_| {
             println!(
@@ -103,7 +103,7 @@ where
 /// The current working directory.
 pub fn current_dir() -> String {
     match std::env::current_dir() {
-        Ok(path) => path.to_str().unwrap_or_else(|| ".").to_string(),
+        Ok(path) => path.to_str().unwrap_or(".").to_string(),
         Err(_) => panic!("Unable to get current directory."),
     }
 }

@@ -1,4 +1,5 @@
-use std::fs;
+use std::fs::{self, File};
+use std::path::Path;
 
 /// Download files from a URL.
 ///
@@ -16,7 +17,7 @@ pub async fn download_files(base_url: &str, files: Vec<&str>, name: &String) {
     let tasks = files.iter().map(|file| {
         let url = format!("{}{}", base_url, file);
         let path = format!("{}/{}/{}", utils::current_dir(), name, file);
-        download_file(url.to_owned(), path.to_owned())
+        download_file(url, path)
     });
 
     futures::future::join_all(tasks).await;
@@ -30,8 +31,8 @@ pub async fn download_files(base_url: &str, files: Vec<&str>, name: &String) {
 /// * `path` - The path to save the file to.
 async fn download_file(url: String, path: String) -> Result<(), Box<dyn std::error::Error>> {
     let resp = reqwest::get(url).await?.text().await?;
-    fs::create_dir_all(std::path::Path::new(&path).parent().unwrap()).unwrap();
-    let mut out = std::fs::File::create(path)?;
+    fs::create_dir_all(Path::new(&path).parent().unwrap()).unwrap();
+    let mut out = File::create(path)?;
     std::io::copy(&mut resp.as_bytes(), &mut out)?;
     Ok(())
 }
@@ -42,11 +43,10 @@ async fn download_file(url: String, path: String) -> Result<(), Box<dyn std::err
 ///
 /// * `dir` - The directory to create.
 async fn mkdir_if_not_exists(dir: String) {
-    use std::path::Path;
     if !Path::new(&dir).exists() {
         tokio::fs::create_dir(dir).await.unwrap();
         return;
     }
     eprintln!("Directory {} already exists", dir);
-    std::process::exit(0)
+    std::process::exit(1)
 }

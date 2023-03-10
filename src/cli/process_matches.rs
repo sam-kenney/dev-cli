@@ -9,23 +9,17 @@ use clap::ArgMatches;
 pub async fn process_matches(matches: ArgMatches) {
     let cmd: Option<&str> = matches.subcommand_name();
 
-    match cmd {
-        Some("project") => {
-            let matches: &ArgMatches = matches.subcommand_matches("project").unwrap();
-            let cmd: Option<&str> = matches.subcommand_name();
+    if let Some("project") = cmd {
+        let matches: &ArgMatches = matches.subcommand_matches("project").unwrap();
+        let cmd: Option<&str> = matches.subcommand_name();
+        process_project_subcommand(matches, cmd).await;
+    }
+}
 
-            match cmd {
-                Some("new") => {
-                    let name: String = cli::get_required_value(matches, "new", "name");
-
-                    let lang: String =
-                        cli::get_value_or_default(matches, "new", "lang", "py".to_string());
-
-                    cli::execute(name, lang).await
-                }
-                _ => {}
-            }
-        }
-        _ => {}
+async fn process_project_subcommand(matches: &ArgMatches, cmd: Option<&str>) {
+    if let Some("new") = cmd {
+        let name: String = cli::get_required_value(matches, "new", "name");
+        let lang: String = cli::get_value_or_default(matches, "new", "lang", "py".to_string());
+        cli::execute(name, lang).await
     }
 }
