@@ -16,6 +16,12 @@ pub async fn process_matches(matches: ArgMatches) {
     }
 }
 
+/// Process the matches from the `project` subcommand.
+///
+/// # Arguments
+///
+/// * `matches` - The matches from the `project` subcommand.
+/// * `cmd` - The subcommand of the `project` subcommand.
 async fn process_project_subcommand(matches: &ArgMatches, cmd: Option<&str>) {
     if let Some("new") = cmd {
         let name: String = cli::get_required_value(matches, "new", "name");
