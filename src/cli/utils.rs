@@ -107,3 +107,82 @@ pub fn current_dir() -> String {
         Err(_) => panic!("Unable to get current directory."),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use clap::{Arg, ArgMatches, Command};
+
+    #[test]
+    fn test_get_required_value() {
+        let matches: ArgMatches = Command::new("dev-cli")
+            .subcommand(
+                Command::new("test")
+                    .about("A test subcommand")
+                    .arg(Arg::new("test").required(true)),
+            )
+            .get_matches_from(vec!["dev-cli", "test", "test"]);
+
+        let val: String = super::get_required_value(&matches, "test", "test");
+        assert_eq!(val, "test");
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_get_required_value_panic() {
+        let matches: ArgMatches = Command::new("dev-cli")
+            .subcommand(Command::new("test").about("A test subcommand"))
+            .get_matches_from(vec!["dev-cli", "test"]);
+
+        let _val: String = super::get_required_value(&matches, "test", "test");
+    }
+
+    #[test]
+    fn test_get_optional_value() {
+        let matches: ArgMatches = Command::new("dev-cli")
+            .subcommand(
+                Command::new("test")
+                    .about("A test subcommand")
+                    .arg(Arg::new("test").required(true)),
+            )
+            .get_matches_from(vec!["dev-cli", "test", "test"]);
+
+        let val: Option<String> = super::get_optional_value(&matches, "test", "test");
+        assert_eq!(val, Some("test".to_string()));
+    }
+
+    #[test]
+    fn test_get_value_or_default() {
+        let matches: ArgMatches = Command::new("dev-cli")
+            .subcommand(
+                Command::new("test")
+                    .about("A test subcommand")
+                    .arg(Arg::new("test")),
+            )
+            .get_matches_from(vec!["dev-cli", "test", "test"]);
+
+        let val: String =
+            super::get_value_or_default(&matches, "test", "test", "default".to_string());
+        assert_eq!(val, "test");
+    }
+
+    #[test]
+    fn test_get_value_or_default_default() {
+        let matches: ArgMatches = Command::new("dev-cli")
+            .subcommand(
+                Command::new("test")
+                    .about("A test subcommand")
+                    .arg(Arg::new("test")),
+            )
+            .get_matches_from(vec!["dev-cli", "test"]);
+
+        let val: String =
+            super::get_value_or_default(&matches, "test", "test", "default".to_string());
+        assert_eq!(val, "default");
+    }
+
+    #[test]
+    fn test_current_dir() {
+        let dir: String = super::current_dir();
+        assert_eq!(dir, std::env::current_dir().unwrap().to_str().unwrap());
+    }
+}

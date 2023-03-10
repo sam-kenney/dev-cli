@@ -33,3 +33,18 @@ pub fn print_cmd_out(output: Output) {
         eprintln!("{}", stderr);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+
+    #[test]
+    fn test_git_init() {
+        let name: String = "_test_git_init".to_string();
+        git_init(&name);
+        let exists: bool = fs::metadata(&name).is_ok();
+        assert_eq!(exists, true);
+        fs::remove_dir_all(name).unwrap();
+    }
+}

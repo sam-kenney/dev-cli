@@ -50,3 +50,51 @@ async fn mkdir_if_not_exists(dir: String) {
     eprintln!("Directory {} already exists", dir);
     std::process::exit(1)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::prelude::*;
+
+    #[tokio::test]
+    async fn test_download_file() {
+        let url: String =
+            "https://raw.githubusercontent.com/sam-kenney/dev-cli/main/.gitignore".to_string();
+        let path: String = format!(
+            "{}/_test_download_file/.gitignore",
+            std::env::current_dir().unwrap().to_str().unwrap()
+        );
+        download_file(url, path).await.unwrap();
+        let mut file = File::open("_test_download_file/.gitignore").unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        assert_eq!(contents, "/target\n");
+        fs::remove_dir_all("_test_download_file").unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_mkdir_if_not_exists() {
+        let dir: String = format!(
+            "{}/_test_mkdir_if_not_exists",
+            std::env::current_dir().unwrap().to_str().unwrap()
+        );
+        mkdir_if_not_exists(dir.clone()).await;
+        assert!(Path::new(&dir).exists());
+        fs::remove_dir(dir).unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_download_files() {
+        let base_url: String =
+            "https://raw.githubusercontent.com/sam-kenney/dev-cli/main/".to_string();
+        let files: Vec<&str> = vec![".gitignore"];
+        let name: String = "_test_download_files".to_string();
+        download_files(&base_url, files, &name).await;
+        let mut file = File::open("_test_download_files/.gitignore").unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        assert_eq!(contents, "/target\n");
+        fs::remove_dir_all("_test_download_files").unwrap();
+    }
+}

@@ -23,4 +23,3 @@ pub async fn cpp(name: String) {
     cli::download::download_files(base_url, files, &name).await;
     cli::bash::git_init(&name);
 }
-
