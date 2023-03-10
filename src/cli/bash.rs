@@ -2,7 +2,7 @@ extern crate alloc;
 use alloc::borrow::Cow;
 use std::process::{Command, Output};
 
-/// Create a new bash project.
+/// Initialise a new Git repository.
 ///
 /// # Arguments
 ///
@@ -12,7 +12,7 @@ pub fn git_init(name: &String) {
         .arg("init")
         .arg(name)
         .output()
-        .expect("failed to execute process");
+        .expect("Failed to execute process");
 
     print_cmd_out(output)
 }
