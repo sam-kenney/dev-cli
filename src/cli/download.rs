@@ -37,6 +37,19 @@ async fn download_file(url: String, path: String) -> Result<(), Box<dyn std::err
     Ok(())
 }
 
+/// Download text from a URL.
+///
+/// # Arguments
+///
+/// * `url` - The URL to download the text from.
+pub async fn download_to<T>(url: String) -> Result<T, Box<dyn std::error::Error>>
+where
+    T: serde::de::DeserializeOwned,
+{
+    let resp = reqwest::get(url).await?.json::<T>().await?;
+    Ok(resp)
+}
+
 /// Create a directory if it does not exist.
 ///
 /// # Arguments

@@ -7,6 +7,11 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.0.29", features = ["cargo"] }
+dirs = "5.0.0"
 futures = "0.3.17"
-reqwest = { version = "0.11.4", features = ["blocking"] }
+reqwest = { version = "0.11.4", features = ["json"] }
 tokio = { version = "1.9.0", features = ["full"] }
+serde = { version = "1.0.130", features = ["derive"] }
+serde_json = "1.0.68"
+serde_yaml = "0.9"
+textwrap = "0.16.0"

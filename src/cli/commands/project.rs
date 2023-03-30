@@ -1,4 +1,4 @@
-use clap::{arg, Command};
+use clap::{arg, Arg, Command};
 
 /// Operations for creating and managing projects.
 ///
@@ -19,7 +19,7 @@ pub fn project() -> Command {
 fn new() -> Command {
     Command::new("new")
         .about("Create a new project")
-        .arg(clap::Arg::new("name").required(true))
+        .arg(Arg::new("name").required(true))
         .arg(arg!(-l --lang <String> "Language to generate a project for"))
         .arg_required_else_help(true)
 }

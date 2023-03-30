@@ -8,6 +8,7 @@ async fn main() {
         .author("Sam Kenney <sam.kenney@me.com>")
         .about("A CLI for creating development projects")
         .subcommand(cli::commands::project())
+        .subcommand(cli::commands::search())
         .arg_required_else_help(true)
         .get_matches();
 

@@ -9,10 +9,20 @@ use clap::ArgMatches;
 pub async fn process_matches(matches: ArgMatches) {
     let cmd: Option<&str> = matches.subcommand_name();
 
-    if let Some("project") = cmd {
-        let matches: &ArgMatches = matches.subcommand_matches("project").unwrap();
-        let cmd: Option<&str> = matches.subcommand_name();
-        process_project_subcommand(matches, cmd).await;
+    match cmd {
+        Some("project") => {
+            let matches: &ArgMatches = matches.subcommand_matches("project").unwrap();
+            let cmd: Option<&str> = matches.subcommand_name();
+            process_project_subcommand(matches, cmd).await;
+        }
+
+        Some("search") => {
+            let query: String = cli::get_required_value(&matches, "search", "query");
+            let page_num: usize = cli::get_value_or_default(&matches, "search", "page", 1);
+            cli::query::execute(query, page_num).await;
+        }
+
+        _ => {}
     }
 }
 
