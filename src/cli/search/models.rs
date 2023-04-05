@@ -1,18 +1,17 @@
 //! Models for the Search module.
 use serde::Deserialize;
 
-/// Container for a list of results from a query.
 #[derive(Deserialize, Debug)]
-pub struct SeachResult {
-    items: Vec<ResultItem>,
+pub struct SearchResults {
+    items: Vec<SearchResult>,
 }
 
-/// Implement the `IntoIterator` trait for `SeachResult`.
-impl std::iter::IntoIterator for SeachResult {
-    type Item = ResultItem;
+/// Implement the `IntoIterator` trait for `SearchResults`.
+impl std::iter::IntoIterator for SearchResults {
+    type Item = SearchResult;
     type IntoIter = std::vec::IntoIter<Self::Item>;
 
-    /// Convert the `SeachResult` into an iterator.
+    /// Convert the `SearchResults` into an iterator.
     /// Iterates over the internal `items` vector.
     fn into_iter(self) -> Self::IntoIter {
         self.items.into_iter()
@@ -27,14 +26,14 @@ impl std::iter::IntoIterator for SeachResult {
 /// * `link` - The link to the result.
 /// * `snippet` - A description of the result.
 #[derive(Deserialize, Debug)]
-pub struct ResultItem {
+pub struct SearchResult {
     title: String,
     link: String,
     snippet: String,
 }
 
-/// Implement the `print` function for `ResultItem`.
-impl ResultItem {
+/// Implement the `print` function for `SearchResult`.
+impl SearchResult {
     /// Print a result to the console.
     ///
     /// # Arguments
