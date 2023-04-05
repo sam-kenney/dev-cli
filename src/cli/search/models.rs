@@ -1,7 +1,9 @@
 //! Models for the Search module.
-use serde::Deserialize;
+use std::path::PathBuf;
 
-#[derive(Deserialize, Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Deserialize, Debug, Clone)]
 pub struct SearchResults {
     items: Vec<SearchResult>,
 }
@@ -25,7 +27,7 @@ impl std::iter::IntoIterator for SearchResults {
 /// * `title` - The title of the result.
 /// * `link` - The link to the result.
 /// * `snippet` - A description of the result.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct SearchResult {
     title: String,
     link: String,
@@ -55,5 +57,75 @@ impl SearchResult {
         ",
             idx, self.title, underline, description, self.link
         )
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ResultStoreItem {
+    index: usize,
+    link: String,
+}
+
+impl ResultStoreItem {
+    pub fn new(index: usize, link: String) -> Self {
+        Self { index, link }
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct ResultStore {
+    items: Vec<ResultStoreItem>,
+}
+
+impl ResultStore {
+    pub async fn from_search_results(results: SearchResults) -> Self {
+        let mut items = Vec::new();
+
+        for (index, result) in results.into_iter().enumerate() {
+            let index = index + 1;
+            let item = ResultStoreItem::new(index, result.link);
+            items.push(item);
+        }
+
+        Self { items }
+    }
+
+    pub fn dir() -> PathBuf {
+        let path = dirs::home_dir().unwrap();
+        path.join(".dev-config/results.yaml")
+    }
+
+    pub async fn write(&self) {
+        let path = Self::dir();
+        if !path.parent().unwrap().exists() {
+            tokio::fs::create_dir_all(&path.parent().unwrap())
+                .await
+                .expect("Failed to create directory `.dev-config`");
+        }
+
+        tokio::fs::write(&path, serde_yaml::to_string(&self).unwrap())
+            .await
+            .expect("Failed to write to file");
+    }
+
+    pub async fn get_link(index: usize) -> String {
+        let path = Self::dir();
+
+        if !path.exists() {
+            return String::new();
+        }
+
+        let contents = tokio::fs::read_to_string(path)
+            .await
+            .expect("Failed to read file");
+        let store: ResultStore = serde_yaml::from_str(&contents).expect("Failed to parse YAML");
+
+        let item = store
+            .items
+            .iter()
+            .find(|item| item.index == index)
+            .unwrap_or_else(|| panic!("No item with index {} found", index));
+
+        item.link.clone()
     }
 }

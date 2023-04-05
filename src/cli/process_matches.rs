@@ -1,4 +1,4 @@
-use crate::cli;
+use crate::cli::{self, search::ResultStore};
 use clap::ArgMatches;
 
 /// Process the matches from the CLI.
@@ -17,6 +17,14 @@ pub async fn process_matches(matches: ArgMatches) {
         }
 
         Some("search") => {
+            let last_res: Option<usize> = cli::get_optional_value(&matches, "search", "last");
+
+            if let Some(res) = last_res {
+                let url: String = ResultStore::get_link(res).await;
+                println!("{}", url);
+                std::process::exit(0)
+            }
+
             let query: String = cli::get_required_value(&matches, "search", "query");
             let page_num: usize = cli::get_value_or_default(&matches, "search", "page", 1);
             cli::query::execute(query, page_num).await;

@@ -2,7 +2,10 @@
 //!
 //! Enables searching of Google via your command line.
 use crate::cli::download::download_to;
-use crate::cli::search::{config::Config, models::SearchResults};
+use crate::cli::search::{
+    config::Config,
+    models::{ResultStore, SearchResults},
+};
 
 /// Execute a query.
 ///
@@ -15,6 +18,9 @@ pub async fn execute(query: String, page_num: usize) {
 
     let results: SearchResults =
         get_results(query, config.api_key, config.search_engine_id, page_num).await;
+
+    let history = ResultStore::from_search_results(results.clone()).await;
+    history.write().await;
 
     for (idx, result) in results.into_iter().enumerate() {
         result.print(idx + 1);

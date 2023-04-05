@@ -19,13 +19,16 @@ where
         .subcommand_matches(command)
         .unwrap()
         .get_one::<String>(name)
-        .unwrap_or_else(|| panic!("`{name}` is required"))
+        .unwrap_or_else(|| {
+            eprintln!("Argument `{name}` is required for command `{command}`");
+            std::process::exit(1);
+        })
         .parse()
         .unwrap_or_else(|_| {
             println!(
                 "The value of `{}` must be a valid {}",
                 name,
-                std::any::type_name::<T>()
+                std::any::type_name::<T>(),
             );
             std::process::exit(1);
         })
